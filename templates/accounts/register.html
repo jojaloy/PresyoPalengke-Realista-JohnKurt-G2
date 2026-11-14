@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Register · PresyoPalengke{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Create account</h1>
+  <form method="post" novalidate>{% csrf_token %}
+    {% include 'accounts/_form.html' %}
+    <button class="btn" type="submit">Register</button>
+  </form>
+  <p class="help">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+</div>
+{% endblock %}
