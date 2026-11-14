@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Vendor Dashboard · PresyoPalengke{% endblock %}
+{% block nav_links %}
+  <a href="{% url 'accounts:vendor_dashboard' %}">Dashboard</a>
+  <span>Submit Price</span><span>My Submissions</span>
+{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Hello, {{ user.first_name }}!</h1>
+  <p>Vendor dashboard. Post current prices so shoppers can find your market.</p>
+</div>
+<div class="grid">
+  <div class="card"><h2>Submit a price</h2><p class="help">Coming in a later phase.</p></div>
+  <div class="card"><h2>My submissions</h2><p class="help">Coming in a later phase.</p></div>
+</div>
+{% endblock %}

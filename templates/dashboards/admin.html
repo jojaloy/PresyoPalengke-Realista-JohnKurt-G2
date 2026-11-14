@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard · PresyoPalengke{% endblock %}
+{% block nav_links %}
+  <a href="{% url 'accounts:admin_dashboard' %}">Dashboard</a>
+  <a href="{% url 'admin:index' %}">Django Admin</a>
+{% endblock %}
+{% block content %}
+<div class="card"><h1>Admin dashboard</h1><p>Overview of registered users.</p></div>
+<div class="grid">
+  <div class="card"><div class="stat">{{ total_users }}</div>Total users</div>
+  <div class="card"><div class="stat">{{ shopper_count }}</div>Shoppers</div>
+  <div class="card"><div class="stat">{{ vendor_count }}</div>Vendors</div>
+</div>
+<div class="card">
+  <h2>Recent users</h2>
+  <table>
+    <tr><th>Username</th><th>Email</th><th>Role</th><th>Joined</th></tr>
+    {% for u in recent_users %}<tr><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.get_role_display }}</td><td>{{ u.date_joined|date:"M j, Y" }}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}
