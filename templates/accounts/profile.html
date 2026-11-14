@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}My Profile · PresyoPalengke{% endblock %}
+{% block nav_links %}<a href="{% url 'accounts:dashboard' %}">Dashboard</a>{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>My profile</h1>
+  <div class="row">
+    {% if profile_user.profile_photo %}<img class="avatar" src="{{ profile_user.profile_photo.url }}" alt="Profile photo">
+    {% else %}<div class="avatar"></div>{% endif %}
+    <div>
+      <strong>{{ profile_user.get_full_name|default:profile_user.username }}</strong><br>
+      <span class="badge">{{ profile_user.get_role_display }}</span>
+    </div>
+  </div>
+  <table>
+    <tr><th>Username</th><td>{{ profile_user.username }}</td></tr>
+    <tr><th>Email</th><td>{{ profile_user.email }}</td></tr>
+    <tr><th>Contact number</th><td>{{ profile_user.contact_number|default:"—" }}</td></tr>
+    <tr><th>Preferred markets</th><td>{{ profile_user.preferred_markets|default:"—" }}</td></tr>
+    <tr><th>Member since</th><td>{{ profile_user.date_joined|date:"F j, Y" }}</td></tr>
+  </table>
+  <a class="btn" href="{% url 'accounts:profile_edit' %}">Edit profile</a>
+</div>
+{% endblock %}
