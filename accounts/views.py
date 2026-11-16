@@ -1,9 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.http import require_POST
 
 from reports.models import PriceReport
@@ -51,6 +51,20 @@ class UserLoginView(LoginView):
     def get_success_url(self):
         # Honour ?next= when safe, otherwise go to the role dashboard.
         return self.get_redirect_url() or reverse(DASHBOARD_BY_ROLE[self.request.user.role])
+
+
+class UserPasswordChangeView(PasswordChangeView):
+    """Logged-in users change their own password; they stay logged in afterwards."""
+    template_name = 'accounts/password_change.html'
+    success_url = reverse_lazy('accounts:profile')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Your password has been changed.')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Could not change password. Please fix the errors below.')
+        return super().form_invalid(form)
 
 
 @require_POST

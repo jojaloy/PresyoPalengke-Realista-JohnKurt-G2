@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from .models import User
 
@@ -150,3 +150,44 @@ class ProfileTests(TestCase):
             'first_name': 'A', 'last_name': 'A', 'email': 'a@example.com', 'role': 'admin'})
         self.a.refresh_from_db()
         self.assertEqual(self.a.role, 'shopper')
+
+
+class PasswordChangeTests(TestCase):
+    url = reverse_lazy('accounts:password_change')
+    NEW = 'N3w!Pass#456'
+
+    def setUp(self):
+        self.user = make_user('juan', 'shopper')
+        self.client.login(username='juan', password=PW)
+
+    def data(self, **kw):
+        return {'old_password': PW, 'new_password1': self.NEW, 'new_password2': self.NEW, **kw}
+
+    def test_requires_login(self):
+        self.client.logout()
+        self.assertRedirects(self.client.get(self.url), f"{reverse('accounts:login')}?next={self.url}")
+
+    def test_success_changes_password_and_stays_logged_in(self):
+        r = self.client.post(self.url, self.data(), follow=True)
+        self.assertRedirects(r, reverse('accounts:profile'))
+        self.assertContains(r, 'password has been changed')
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(self.NEW))
+
+    def test_wrong_old_password(self):
+        r = self.client.post(self.url, self.data(old_password='wrong'))
+        self.assertContains(r, 'Could not change password')
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(PW))
+
+    def test_mismatch_and_weak_rejected(self):
+        self.client.post(self.url, self.data(new_password2='different'))
+        self.client.post(self.url, self.data(new_password1='123', new_password2='123'))
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(PW))
+
+    def test_403_page_is_friendly(self):
+        vendor = make_user('vic', 'vendor')
+        self.client.login(username='vic', password=PW)
+        r = self.client.get(reverse('reports:create'))
+        self.assertContains(r, 'Access denied', status_code=403)
