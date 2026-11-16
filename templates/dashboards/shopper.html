@@ -2,15 +2,28 @@
 {% block title %}Shopper Dashboard · PresyoPalengke{% endblock %}
 {% block nav_links %}
   <a href="{% url 'accounts:shopper_dashboard' %}">Dashboard</a>
-  <span>Compare Prices</span><span>Search Items</span><span>Price Trends</span>
+  {% include 'reports/_nav.html' %}
 {% endblock %}
 {% block content %}
 <div class="card">
   <h1>Hello, {{ user.first_name }}!</h1>
-  <p>Shopper dashboard. Check and compare palengke prices before you shop.</p>
+  <p>Shopper dashboard. Report the prices you see at the palengke so others can compare.</p>
+  <a class="btn" href="{% url 'reports:create' %}">+ Report a price</a>
 </div>
 <div class="grid">
-  <div class="card"><h2>Today's prices</h2><p class="help">Coming in a later phase.</p></div>
+  <div class="card"><div class="stat">{{ my_report_count }}</div>Reports I submitted</div>
   <div class="card"><h2>My markets</h2><p>{{ user.preferred_markets|default:"None set yet" }}</p><a href="{% url 'accounts:profile_edit' %}">Update</a></div>
+</div>
+<div class="card">
+  <h2>My recent reports</h2>
+  {% if my_recent_reports %}
+  <table>
+    <tr><th>Product</th><th>Market</th><th>Price</th><th>Date seen</th></tr>
+    {% for r in my_recent_reports %}
+    <tr><td><a href="{% url 'reports:detail' r.pk %}">{{ r.product }}</a></td><td>{{ r.market }}</td><td>₱{{ r.price }} <span class="help">{{ r.get_unit_display }}</span></td><td>{{ r.date_observed|date:"M j, Y" }}</td></tr>
+    {% endfor %}
+  </table>
+  <p><a href="{% url 'reports:list' %}">View all my reports</a></p>
+  {% else %}<p class="help">You haven't reported any prices yet.</p>{% endif %}
 </div>
 {% endblock %}

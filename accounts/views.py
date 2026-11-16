@@ -6,6 +6,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from reports.models import PriceReport
+
 from .decorators import role_required
 from .forms import LoginForm, ProfileForm, RegisterForm
 from .models import User
@@ -66,12 +68,20 @@ def dashboard(request):
 
 @role_required(User.Role.SHOPPER)
 def shopper_dashboard(request):
-    return render(request, 'dashboards/shopper.html')
+    mine = PriceReport.objects.filter(reporter=request.user).select_related('product', 'market')
+    return render(request, 'dashboards/shopper.html', {
+        'my_report_count': mine.count(),
+        'my_recent_reports': mine[:5],
+    })
 
 
 @role_required(User.Role.VENDOR)
 def vendor_dashboard(request):
-    return render(request, 'dashboards/vendor.html')
+    reports = PriceReport.objects.select_related('product', 'market')
+    return render(request, 'dashboards/vendor.html', {
+        'report_count': reports.count(),
+        'recent_reports': reports[:5],
+    })
 
 
 @role_required(User.Role.ADMIN)
@@ -81,6 +91,8 @@ def admin_dashboard(request):
         'shopper_count': User.objects.filter(role=User.Role.SHOPPER).count(),
         'vendor_count': User.objects.filter(role=User.Role.VENDOR).count(),
         'recent_users': User.objects.order_by('-date_joined')[:10],
+        'report_count': PriceReport.objects.count(),
+        'recent_reports': PriceReport.objects.select_related('product', 'market', 'reporter')[:5],
     }
     return render(request, 'dashboards/admin.html', context)
 
