@@ -36,6 +36,8 @@ Open http://127.0.0.1:8000/
 | Vendor | Register form | `/dashboard/vendor/` |
 | Admin | `createsuperuser` | `/dashboard/admin/` |
 
+Users can change their own password from the Profile page (`/password/change/`).
+
 Opening another role's dashboard URL returns 403; logged-out users are redirected to login.
 
 ## Tests
