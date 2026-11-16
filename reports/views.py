@@ -59,7 +59,7 @@ def report_detail(request, pk):
 
 @role_required(User.Role.SHOPPER)
 def report_create(request):
-    form = PriceReportForm(request.POST or None, user=request.user)
+    form = PriceReportForm(request.POST if request.method == 'POST' else None, user=request.user)
     if request.method == 'POST':
         if form.is_valid():
             report = form.save(commit=False)
@@ -76,7 +76,8 @@ def report_update(request, pk):
     report = get_object_or_404(PriceReport, pk=pk)
     if report.reporter_id != request.user.pk:
         raise PermissionDenied
-    form = PriceReportForm(request.POST or None, instance=report, user=request.user)
+    form = PriceReportForm(
+        request.POST if request.method == 'POST' else None, instance=report, user=request.user)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
