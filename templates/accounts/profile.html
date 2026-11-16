@@ -20,5 +20,6 @@
     <tr><th>Member since</th><td>{{ profile_user.date_joined|date:"F j, Y" }}</td></tr>
   </table>
   <a class="btn" href="{% url 'accounts:profile_edit' %}">Edit profile</a>
+  <a class="btn secondary" href="{% url 'accounts:password_change' %}">Change password</a>
 </div>
 {% endblock %}
