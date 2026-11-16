@@ -1,0 +1,2 @@
+<a href="{% url 'reports:list' %}">{% if user.role == 'shopper' %}My Price Reports{% else %}Price Reports{% endif %}</a>
+{% if user.role == 'shopper' %}<a href="{% url 'reports:create' %}">Report a Price</a>{% endif %}

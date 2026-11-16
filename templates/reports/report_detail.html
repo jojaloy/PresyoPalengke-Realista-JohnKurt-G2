@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Price Report · PresyoPalengke{% endblock %}
+{% block nav_links %}{% include 'reports/_nav.html' %}{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>{{ report.product }}</h1>
+  <p class="stat">₱{{ report.price }} <span class="help">{{ report.get_unit_display }}</span></p>
+  <table>
+    <tr><th>Market</th><td>{{ report.market }}{% if report.market.location %} <span class="help">({{ report.market.location }})</span>{% endif %}</td></tr>
+    <tr><th>Category</th><td>{{ report.product.get_category_display }}</td></tr>
+    <tr><th>Date seen</th><td>{{ report.date_observed|date:"F j, Y" }}</td></tr>
+    <tr><th>Reported by</th><td>{{ report.reporter.get_full_name|default:report.reporter.username }}</td></tr>
+    <tr><th>Notes</th><td>{{ report.notes|default:"—" }}</td></tr>
+    <tr><th>Last updated</th><td>{{ report.updated_at|date:"M j, Y g:i A" }}</td></tr>
+  </table>
+  <div class="row">
+    {% if can_edit %}<a class="btn" href="{% url 'reports:update' report.pk %}">Edit</a>{% endif %}
+    {% if can_delete %}<a class="btn secondary" href="{% url 'reports:delete' report.pk %}">Delete</a>{% endif %}
+    <a class="btn secondary" href="{% url 'reports:list' %}">Back</a>
+  </div>
+</div>
+{% endblock %}
