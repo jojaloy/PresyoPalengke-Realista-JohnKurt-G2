@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Access denied · PresyoPalengke{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h1>Access denied (403)</h1>
+  <p>Your account role is not allowed to do this.</p>
+  {% if user.is_authenticated %}<a class="btn" href="{% url 'accounts:dashboard' %}">Back to my dashboard</a>
+  {% else %}<a class="btn" href="{% url 'accounts:login' %}">Log in</a>{% endif %}
+</div>
+{% endblock %}
