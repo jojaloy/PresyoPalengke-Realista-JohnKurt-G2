@@ -2,6 +2,7 @@
 {% block title %}Admin Dashboard · PresyoPalengke{% endblock %}
 {% block nav_links %}
   <a href="{% url 'accounts:admin_dashboard' %}">Dashboard</a>
+  {% include 'reports/_nav.html' %}
   <a href="{% url 'admin:index' %}">Django Admin</a>
 {% endblock %}
 {% block content %}
@@ -10,6 +11,7 @@
   <div class="card"><div class="stat">{{ total_users }}</div>Total users</div>
   <div class="card"><div class="stat">{{ shopper_count }}</div>Shoppers</div>
   <div class="card"><div class="stat">{{ vendor_count }}</div>Vendors</div>
+  <div class="card"><div class="stat">{{ report_count }}</div>Price reports</div>
 </div>
 <div class="card">
   <h2>Recent users</h2>
@@ -17,5 +19,17 @@
     <tr><th>Username</th><th>Email</th><th>Role</th><th>Joined</th></tr>
     {% for u in recent_users %}<tr><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.get_role_display }}</td><td>{{ u.date_joined|date:"M j, Y" }}</td></tr>{% endfor %}
   </table>
+</div>
+<div class="card">
+  <h2>Recent price reports</h2>
+  {% if recent_reports %}
+  <table>
+    <tr><th>Product</th><th>Market</th><th>Price</th><th>Reported by</th><th>Date seen</th></tr>
+    {% for r in recent_reports %}
+    <tr><td><a href="{% url 'reports:detail' r.pk %}">{{ r.product }}</a></td><td>{{ r.market }}</td><td>₱{{ r.price }} <span class="help">{{ r.get_unit_display }}</span></td><td>{{ r.reporter.username }}</td><td>{{ r.date_observed|date:"M j, Y" }}</td></tr>
+    {% endfor %}
+  </table>
+  <p><a href="{% url 'reports:list' %}">Manage all price reports</a></p>
+  {% else %}<p class="help">No price reports yet.</p>{% endif %}
 </div>
 {% endblock %}

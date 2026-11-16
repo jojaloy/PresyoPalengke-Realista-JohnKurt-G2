@@ -2,15 +2,26 @@
 {% block title %}Vendor Dashboard · PresyoPalengke{% endblock %}
 {% block nav_links %}
   <a href="{% url 'accounts:vendor_dashboard' %}">Dashboard</a>
-  <span>Submit Price</span><span>My Submissions</span>
+  {% include 'reports/_nav.html' %}
 {% endblock %}
 {% block content %}
 <div class="card">
   <h1>Hello, {{ user.first_name }}!</h1>
-  <p>Vendor dashboard. Post current prices so shoppers can find your market.</p>
+  <p>Vendor dashboard. See what shoppers are reporting across Cebu City markets so you can price competitively.</p>
 </div>
 <div class="grid">
-  <div class="card"><h2>Submit a price</h2><p class="help">Coming in a later phase.</p></div>
-  <div class="card"><h2>My submissions</h2><p class="help">Coming in a later phase.</p></div>
+  <div class="card"><div class="stat">{{ report_count }}</div>Price reports from shoppers</div>
+</div>
+<div class="card">
+  <h2>Latest price reports</h2>
+  {% if recent_reports %}
+  <table>
+    <tr><th>Product</th><th>Market</th><th>Price</th><th>Date seen</th></tr>
+    {% for r in recent_reports %}
+    <tr><td><a href="{% url 'reports:detail' r.pk %}">{{ r.product }}</a></td><td>{{ r.market }}</td><td>₱{{ r.price }} <span class="help">{{ r.get_unit_display }}</span></td><td>{{ r.date_observed|date:"M j, Y" }}</td></tr>
+    {% endfor %}
+  </table>
+  <p><a href="{% url 'reports:list' %}">Browse all price reports</a></p>
+  {% else %}<p class="help">No price reports yet.</p>{% endif %}
 </div>
 {% endblock %}

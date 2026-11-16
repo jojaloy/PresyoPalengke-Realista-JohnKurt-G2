@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Price Reports · PresyoPalengke{% endblock %}
+{% block nav_links %}
+  {% if user.role == 'shopper' %}<a href="{% url 'accounts:shopper_dashboard' %}">Dashboard</a>
+  {% elif user.role == 'vendor' %}<a href="{% url 'accounts:vendor_dashboard' %}">Dashboard</a>
+  {% else %}<a href="{% url 'accounts:admin_dashboard' %}">Dashboard</a>{% endif %}
+  {% include 'reports/_nav.html' %}
+{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="row">
+    <h1 style="margin:0;flex:1">{% if user.role == 'shopper' %}My price reports{% else %}All price reports{% endif %}</h1>
+    {% if user.role == 'shopper' %}<a class="btn" style="margin:0" href="{% url 'reports:create' %}">+ Report a price</a>{% endif %}
+  </div>
+  <form method="get" class="row" style="margin-top:1rem;align-items:end">
+    <div style="flex:1">{{ filter_form.q.label_tag }}{{ filter_form.q }}</div>
+    <div style="flex:1">{{ filter_form.market.label_tag }}{{ filter_form.market }}</div>
+    <button class="btn" style="margin:0" type="submit">Filter</button>
+    <a class="btn secondary" style="margin:0" href="{% url 'reports:list' %}">Clear</a>
+  </form>
+</div>
+<div class="card">
+  {% if page.object_list %}
+  <table>
+    <tr><th>Product</th><th>Market</th><th>Price</th><th>Date seen</th>{% if show_reporter %}<th>Reported by</th>{% endif %}<th></th></tr>
+    {% for r in page %}
+    <tr>
+      <td>{{ r.product }}</td><td>{{ r.market }}</td>
+      <td>₱{{ r.price }} <span class="help">{{ r.get_unit_display }}</span></td>
+      <td>{{ r.date_observed|date:"M j, Y" }}</td>
+      {% if show_reporter %}<td>{{ r.reporter.username }}</td>{% endif %}
+      <td><a href="{% url 'reports:detail' r.pk %}">View</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p class="help">
+    {% if page.has_previous %}<a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.previous_page_number }}">‹ Previous</a>{% endif %}
+    Page {{ page.number }} of {{ page.paginator.num_pages }}
+    {% if page.has_next %}<a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.next_page_number }}">Next ›</a>{% endif %}
+  </p>
+  {% else %}
+    <p>No price reports found.{% if user.role == 'shopper' %} <a href="{% url 'reports:create' %}">Report your first price</a>.{% endif %}</p>
+  {% endif %}
+</div>
+{% endblock %}
